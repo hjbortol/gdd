@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grafo de Divisibilidade</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --primary-color: #2c3e50;
+            --accent-color: #e67e22;
+            --node-bg: #fff;
+            --node-border: #34495e;
+            --arrow-color: #7f8c8d;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 10px;
+        }
+
+        /* Estilos da Explicação Didática */
+        .explicacao-didatica {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            padding: 30px;
+            margin: 20px auto 30px auto;
+            text-align: left;
+            line-height: 1.6;
+            color: #333;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .explicacao-didatica h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+            border-bottom: 2px solid #f4f7f6;
+            padding-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        .explicacao-didatica h3 {
+            color: var(--accent-color);
+            margin-top: 25px;
+            font-size: 1.2em;
+        }
+
+        .explicacao-didatica p {
+            margin-bottom: 15px;
+            font-size: 1.05em;
+        }
+
+        .explicacao-didatica ul {
+            margin-bottom: 20px;
+        }
+
+        .explicacao-didatica li {
+            margin-bottom: 10px;
+        }
+
+        .destaque {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            margin: 15px 0;
+        }
+
+        .introducao-app {
+            font-size: 1.1em;
+            color: var(--primary-color);
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+
+        /* Controles e App */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            background: #fff;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        label {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: var(--primary-color);
+        }
+
+        input[type="number"], input[type="text"] {
+            width: 80px;
+            padding: 8px;
+            font-size: 1.1em;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+            outline: none;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--accent-color);
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            font-size: 1em;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.1s;
+        }
+
+        button:hover {
+            background-color: #1a252f;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        #btn-animate {
+            background-color: var(--accent-color);
+        }
+
+        #btn-animate:hover {
+            background-color: #d35400;
+        }
+
+        /* Controle de Velocidade */
+        .speed-control {
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            color: var(--primary-color);
+        }
+
+        .speed-control label {
+            font-size: 1em;
+            font-weight: 600;
+        }
+
+        .speed-control input[type="range"] {
+            vertical-align: middle;
+            margin-left: 10px;
+            cursor: pointer;
+            width: 150px;
+        }
+
+        .canvas-layout {
+            display: grid;
+            grid-template-columns: minmax(300px, 540px) minmax(240px, 1fr);
+            gap: 18px;
+            align-items: start;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .canvas-container {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 0;
+            display: inline-block;
+            width: 100%;
+        }
+
+        canvas {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 0 auto;
+        }
+
+        .side-panel {
+            text-align: left;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.07);
+            padding: 18px;
+            min-height: 260px;
+        }
+
+        .side-panel h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            border-bottom: 1px solid #edf0f2;
+            padding-bottom: 8px;
+        }
+
+        #step-message {
+            background: #e8f4f8;
+            border-radius: 10px;
+            padding: 12px 14px;
+            line-height: 1.45;
+            margin-bottom: 14px;
+            min-height: 70px;
+            color: #2c3e50;
+        }
+
+        .legend-item {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin: 8px 0;
+            color: #47545c;
+            font-size: 0.95em;
+        }
+
+        .swatch {
+            width: 24px;
+            height: 4px;
+            border-radius: 4px;
+            background: #bdc3c7;
+            display: inline-block;
+        }
+
+        .swatch-token {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            border: 2px solid #d35400;
+            display: inline-block;
+            flex: 0 0 auto;
+        }
+
+        .swatch-node {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #fff;
+            border: 2px solid var(--node-border);
+            display: inline-block;
+            flex: 0 0 auto;
+        }
+
+        code {
+            background: #eef2f4;
+            padding: 2px 5px;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 900px) {
+            body { max-width: 800px; }
+            .canvas-layout { grid-template-columns: 1fr; }
+        }
+
+        #result-message {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--primary-color);
+            min-height: 60px;
+            margin-bottom: 30px;
+            padding: 15px;
+            background: #e8f4f8;
+            border-radius: 8px;
+            display: none;
+        }
+
+        footer {
+            font-size: 0.9em;
+            color: #888;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Grafo de Divisibilidade</h1>
+
+    <div class="explicacao-didatica">
+
+
+        <p class="introducao-app">Este aplicativo constrói um gráfico de divisibilidade de um divisor <strong>d</strong> e, por meio de movimentações no grafo, determina o resto da divisão de um número <strong>n</strong> por <strong>d</strong>.</p>
+
+<h3>Como funciona a lógica deste Grafo?</h3>
+        <p>Para entender o que a bolinha está fazendo durante essa animação, precisamos entender o grande segredo deste grafo: <strong>ele não representa os números em si, mas sim os RESTOS da divisão.</strong></p>
+
+        <h3>1. Por que faltam números no círculo?</h3>
+        <p>Se você escolher o divisor <strong>d = 7</strong>, vai notar que as "casinhas" (nós do grafo) vão apenas de <strong>0 a 6</strong>. Não existe a casa 7, 8 ou 9. Por quê?</p>
+        <p>Porque na matemática, quando dividimos qualquer número por 7, os únicos restos possíveis que podem sobrar são 0, 1, 2, 3, 4, 5 ou 6. O grafo contém apenas essas posições matemáticas absolutas.</p>
+
+        <h3>2. O comportamento com números de apenas um dígito</h3>
+        <p>Quando você digita um número <strong>n</strong> de apenas um dígito (como 8 ou 9), a matemática é direta e não exige cálculos passo a passo. O aplicativo simplesmente pega esse dígito e calcula o resto dele pelo divisor. Por isso a bolinha já nasce na resposta final:</p>
+
+
+        <div class="destaque">
+            <ul>
+                <li><strong>Se d = 7 e n = 8:</strong> O resto da divisão de 8 por 7 é <strong>1</strong> (pois 7 cabe uma vez dentro do 8, sobrando 1). Como a casa "8" não existe no grafo, a bolinha inicia e fica parada na casa <strong>1</strong>.</li>
+                <li><strong>Se d = 7 e n = 9:</strong> O resto de 9 por 7 é <strong>2</strong>. A bolinha inicia e fica parada direto na casa <strong>2</strong>.</li>
+            </ul>
+        </div>
+
+        <h3>3. Quando a "Mágica" da Animação Acontece?</h3>
+        <p>As setas internas e os pulos pelas bordas foram criados para <strong>desconstruir números grandes</strong>. Portanto, a animação de percorrer caminhos só ocorre de verdade se o número <strong>n</strong> tiver <strong>mais de 1 dígito</strong> (ex: 10, 45, 132).</p>
+
+        <p>A regra de movimentação segue dois passos para cada novo dígito lido da esquerda para a direita:</p>
+        <ul>
+            <li><strong>Andar pelas setas internas:</strong> Representa matematicamente "multiplicar o resto acumulado por 10" ao pularmos para a próxima casa decimal do número.</li>
+            <li><strong>Andar pelo círculo (bordas):</strong> Representa "somar o valor do próximo dígito" ao nosso resto.</li>
+        </ul>
+
+        <center>
+         dublagem de um vídeo explicado o processo:
+         <br>
+            <iframe
+                width="315"
+                height="560"
+                src="https://www.youtube.com/embed/WMeAaiJLSmE"
+                title="YouTube Shorts player"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen>
+            </iframe>
+        </center>
+
+    </div>
+
+    <div class="controls">
+        <div class="control-group">
+            <label for="input-d">d:</label>
+            <input type="text" id="input-d" value="7" pattern="\d+" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+            <button id="btn-build">Construir Grafo</button>
+        </div>
+        <div class="control-group">
+            <label for="input-n">n:</label>
+            <input type="text" id="input-n" value="4523" pattern="\d+" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+            <button id="btn-animate">Animar</button>
+        </div>
+    </div>
+
+    <!-- Novo slider de velocidade -->
+    <div class="speed-control">
+        <label for="speed-slider">Velocidade da animação: <span id="speed-value">100%</span></label>
+        <input type="range" id="speed-slider" min="10" max="200" value="100" step="10">
+    </div>
+
+    <div class="canvas-layout">
+        <div class="canvas-container">
+            <canvas id="graphCanvas" width="500" height="500"></canvas>
+        </div>
+
+        <aside class="side-panel">
+            <h3>Etapa atual</h3>
+            <div id="step-message">Construa o grafo e anime um número para acompanhar, passo a passo, a atualização do resto.</div>
+
+            <h3>Legenda</h3>
+            <div class="legend-item"><span class="swatch-node"></span> Nó: um resto possível na divisão por <strong>d</strong></div>
+            <div class="legend-item"><span class="swatch"></span> Seta interna: <code>r → 10r mod d</code></div>
+            <div class="legend-item"><span class="swatch-token"></span> Bolinha: resto acumulado atual</div>
+        </aside>
+    </div>
+
+    <div id="result-message"></div>
+
+    <footer>
+        Concepção e programação:<a href="https://www.instagram.com/humberto.bortolossi/" target="_new"> Humberto Bortolossi </a>
+        <br>
+        Última atualização: : 01/05/2026.</footer>
+
+    <script>
+        const canvas = document.getElementById('graphCanvas');
+        const ctx = canvas.getContext('2d');
+        const btnBuild = document.getElementById('btn-build');
+        const btnAnimate = document.getElementById('btn-animate');
+        const inputD = document.getElementById('input-d');
+        const inputN = document.getElementById('input-n');
+        const resultMsg = document.getElementById('result-message');
+        const stepMsg = document.getElementById('step-message');
+
+        // Elementos do slider de velocidade
+        const speedSlider = document.getElementById('speed-slider');
+        const speedValue = document.getElementById('speed-value');
+
+        // Configurações Globais e de Estado
+        const cx = canvas.width / 2;
+        const cy = canvas.height / 2;
+        const R = 180;
+        const nodeRadius = 20;
+        let currentD = null;
+        let nodes = [];
+        let highlightedNode = null;
+        let highlightedArrow = null;
+
+        // Estado da animação
+        let isAnimating = false;
+        let token = { active: false, x: 0, y: 0 };
+
+        // Atualizar o valor de exibição do slider
+        speedSlider.addEventListener('input', function() {
+            speedValue.textContent = this.value + '%';
+        });
+
+        // Função auxiliar para calcular o multiplicador de velocidade
+        // 100% = multiplicador 1. 200% = multiplicador 0.5 (metade do tempo). 50% = multiplicador 2 (dobro do tempo).
+        function getSpeedMultiplier() {
+            return 100 / parseInt(speedSlider.value);
+        }
+
+        function setStep(html) {
+            stepMsg.innerHTML = html;
+        }
+
+        // Contexto de Áudio
+        let audioCtx;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        // Sintetizador de sons curtos
+        function playTone(freq, type, duration, vol) {
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            osc.stop(audioCtx.currentTime + duration);
+        }
+
+        function playArrowSound() { playTone(300, 'sine', 0.4, 0.5); }
+        function playHopSound() { playTone(800, 'triangle', 0.1, 0.3); }
+
+        // Som duplo para indicar o final da animação
+        function playFinishSound() {
+            if (!audioCtx) return;
+            playTone(523.25, 'sine', 0.15, 0.5); // Nota Dó (C5)
+            setTimeout(() => {
+                playTone(783.99, 'sine', 0.4, 0.5); // Nota Sol (G5) indicando sucesso
+            }, 150);
+        }
+
+        // Função para calcular coordenadas do nó k
+        function getNodeCoords(k, d) {
+            let angle = -Math.PI / 2 + (k * 2 * Math.PI / d);
+            return { x: cx + R * Math.cos(angle), y: cy + R * Math.sin(angle), angle: angle };
+        }
+
+        // Constrói o Grafo Lógico e Visual
+        function buildGraph() {
+            const dStr = inputD.value;
+            if (!dStr || parseInt(dStr) < 2) {
+                alert("Por favor, insira um divisor (d) válido maior que 1.");
+                return false;
+            }
+            currentD = parseInt(dStr);
+            nodes = [];
+            for (let i = 0; i < currentD; i++) {
+                nodes.push(getNodeCoords(i, currentD));
+            }
+            resultMsg.style.display = 'none';
+            token.active = false;
+            highlightedNode = null;
+            highlightedArrow = null;
+            setStep(`Grafo construído para o divisor <strong>d = ${currentD}</strong>. Os nós representam os restos possíveis: de <strong>0</strong> a <strong>${currentD - 1}</strong>.`);
+            drawFrame();
+            return true;
+        }
+
+        // Renderiza o frame atual do canvas
+        function drawFrame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (!currentD) return;
+
+            // 1. Desenha o círculo principal
+            ctx.beginPath();
+            ctx.arc(cx, cy, R, 0, 2 * Math.PI);
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // 2. Desenha as setas
+            for (let i = 0; i < currentD; i++) {
+                let target = (i * 10) % currentD;
+                const isHighlighted = highlightedArrow && highlightedArrow.from === i && highlightedArrow.to === target;
+                ctx.strokeStyle = isHighlighted ? '#e67e22' : '#bdc3c7';
+                ctx.fillStyle = isHighlighted ? '#e67e22' : '#bdc3c7';
+                ctx.lineWidth = isHighlighted ? 4 : 2;
+                if (target !== i) {
+                    drawCurveArrow(nodes[i], nodes[target]);
+                } else {
+                    drawSelfLoop(nodes[i]);
+                }
+            }
+
+            // 3. Desenha os nós
+            ctx.font = "bold 16px Arial";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+
+            for (let i = 0; i < currentD; i++) {
+                let node = nodes[i];
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, nodeRadius, 0, 2 * Math.PI);
+                ctx.fillStyle = highlightedNode === i ? '#fff3e6' : '#ffffff';
+                ctx.fill();
+                ctx.strokeStyle = highlightedNode === i ? '#e67e22' : '#34495e';
+                ctx.lineWidth = highlightedNode === i ? 4 : 2;
+                ctx.stroke();
+
+                ctx.fillStyle = '#2c3e50';
+                ctx.fillText(i.toString(), node.x, node.y);
+            }
+
+            // 4. Desenha o token
+            if (token.active) {
+                ctx.beginPath();
+                ctx.arc(token.x, token.y, 10, 0, 2 * Math.PI);
+                ctx.fillStyle = '#e67e22';
+                ctx.fill();
+                ctx.strokeStyle = '#d35400';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+        }
+
+        function drawSelfLoop(node) {
+            let offsetAngle = node.angle;
+            let nx = node.x + Math.cos(offsetAngle) * nodeRadius * 1.5;
+            let ny = node.y + Math.sin(offsetAngle) * nodeRadius * 1.5;
+            ctx.beginPath();
+            ctx.arc(nx, ny, 15, 0, 2 * Math.PI);
+            ctx.stroke();
+        }
+
+        function drawCurveArrow(startNode, endNode) {
+            let cpX = (startNode.x + endNode.x) / 2;
+            let cpY = (startNode.y + endNode.y) / 2;
+
+            cpX = cx + (cpX - cx) * 0.4;
+            cpY = cy + (cpY - cy) * 0.4;
+
+            ctx.beginPath();
+            ctx.moveTo(startNode.x, startNode.y);
+            ctx.quadraticCurveTo(cpX, cpY, endNode.x, endNode.y);
+            ctx.stroke();
+
+            drawArrowHead(startNode.x, startNode.y, cpX, cpY, endNode.x, endNode.y);
+        }
+
+        function drawArrowHead(sx, sy, cpx, cpy, ex, ey) {
+            let t = 0.85;
+            let tx = (1-t)*(1-t)*sx + 2*(1-t)*t*cpx + t*t*ex;
+            let ty = (1-t)*(1-t)*sy + 2*(1-t)*t*cpy + t*t*ey;
+
+            let dx = 2*(1-t)*(cpx - sx) + 2*t*(ex - cpx);
+            let dy = 2*(1-t)*(cpy - sy) + 2*t*(ey - cpy);
+            let angle = Math.atan2(dy, dx);
+
+            ctx.beginPath();
+            ctx.moveTo(tx, ty);
+            ctx.lineTo(tx - 12 * Math.cos(angle - Math.PI/6), ty - 12 * Math.sin(angle - Math.PI/6));
+            ctx.lineTo(tx - 12 * Math.cos(angle + Math.PI/6), ty - 12 * Math.sin(angle + Math.PI/6));
+            ctx.fill();
+        }
+
+        function easeInOutQuad(t) { return t<.5 ? 2*t*t : -1+(4-2*t)*t; }
+        function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+
+        async function animatePath(startNodeId, endNodeId, isArrow, duration = 600) {
+            return new Promise(resolve => {
+                let startNode = nodes[startNodeId];
+                let endNode = nodes[endNodeId];
+                let startTime = null;
+
+                let cpX, cpY;
+                let startAngle = startNode.angle;
+                let endAngle = endNode.angle;
+
+                if (!isArrow) {
+                    if (endAngle <= startAngle) {
+                        endAngle += 2 * Math.PI;
+                    }
+                } else {
+                    cpX = cx + (((startNode.x + endNode.x) / 2) - cx) * 0.4;
+                    cpY = cy + (((startNode.y + endNode.y) / 2) - cy) * 0.4;
+                }
+
+                if (isArrow) playArrowSound();
+                else playHopSound();
+
+                function step(timestamp) {
+                    if (!startTime) startTime = timestamp;
+                    let progress = (timestamp - startTime) / duration;
+                    if (progress > 1) progress = 1;
+
+                    let t = easeInOutQuad(progress);
+
+                    if (isArrow) {
+                        token.x = (1-t)*(1-t)*startNode.x + 2*(1-t)*t*cpX + t*t*endNode.x;
+                        token.y = (1-t)*(1-t)*startNode.y + 2*(1-t)*t*cpY + t*t*endNode.y;
+                    } else {
+                        let currentAngle = startAngle + (endAngle - startAngle) * t;
+                        token.x = cx + R * Math.cos(currentAngle);
+                        token.y = cy + R * Math.sin(currentAngle);
+                    }
+
+                    drawFrame();
+
+                    if (progress < 1) {
+                        requestAnimationFrame(step);
+                    } else {
+                        resolve();
+                    }
+                }
+                requestAnimationFrame(step);
+            });
+        }
+
+        async function runAnimation() {
+            if (isAnimating) return;
+
+            initAudio();
+
+            let dVal = parseInt(inputD.value);
+            let nStr = inputN.value;
+
+            if (!nStr || nStr.length === 0) {
+                alert("Por favor, insira o número n.");
+                return;
+            }
+
+            if (currentD !== dVal || nodes.length === 0) {
+                if(!buildGraph()) return;
+            }
+
+            isAnimating = true;
+            resultMsg.style.display = 'none';
+            highlightedArrow = null;
+
+            let digits = nStr.split('').map(Number);
+
+            // Comportamento original: nasce na resposta final para o 1º dígito
+            let currentVal = digits[0] % currentD;
+
+            token.active = true;
+            token.x = nodes[currentVal].x;
+            token.y = nodes[currentVal].y;
+            highlightedNode = currentVal;
+            setStep(`Primeiro dígito lido: <strong>${digits[0]}</strong>.<br>Como o resto de <strong>${digits[0]}</strong> por <strong>${currentD}</strong> é <strong>${currentVal}</strong>, a bolinha começa no nó <strong>${currentVal}</strong>.`);
+            drawFrame();
+
+            let speedMult = getSpeedMultiplier();
+            await sleep(700 * speedMult);
+
+            // Animação começa a partir do 2º dígito (se houver)
+            for (let i = 1; i < digits.length; i++) {
+                let digit = digits[i];
+                speedMult = getSpeedMultiplier(); // Captura dinamicamente a velocidade a cada dígito
+
+                let oldVal = currentVal;
+                let nextValAfter10 = (currentVal * 10) % currentD;
+                highlightedArrow = { from: currentVal, to: nextValAfter10 };
+                highlightedNode = currentVal;
+                setStep(`Próximo dígito: <strong>${digit}</strong>.<br>Primeiro multiplicamos o resto acumulado por 10: <strong>10 × ${oldVal} ≡ ${nextValAfter10} (mod ${currentD})</strong>. A bolinha segue a seta interna correspondente.`);
+                drawFrame();
+                await sleep(250 * speedMult);
+
+                if (nextValAfter10 !== currentVal) {
+                    await animatePath(currentVal, nextValAfter10, true, 700 * speedMult);
+                    currentVal = nextValAfter10;
+                    highlightedNode = currentVal;
+                    highlightedArrow = null;
+                    drawFrame();
+                    await sleep(300 * speedMult);
+                } else {
+                    currentVal = nextValAfter10;
+                    highlightedNode = currentVal;
+                    highlightedArrow = null;
+                    drawFrame();
+                    await sleep(300 * speedMult);
+                }
+
+                if (digit > 0) {
+                    setStep(`Agora somamos o dígito <strong>${digit}</strong> ao resto, fazendo <strong>${digit}</strong> salto${digit === 1 ? '' : 's'} pela borda do círculo.`);
+                    for (let j = 0; j < digit; j++) {
+                        speedMult = getSpeedMultiplier(); // Reavalia a velocidade também nos pulos menores
+                        let nextVal = (currentVal + 1) % currentD;
+                        await animatePath(currentVal, nextVal, false, 300 * speedMult);
+                        currentVal = nextVal;
+                        highlightedNode = currentVal;
+                        drawFrame();
+                        await sleep(100 * speedMult);
+                    }
+                } else {
+                    setStep(`Como o dígito é <strong>0</strong>, não é necessário dar saltos pela borda. O resto permanece <strong>${currentVal}</strong>.`);
+                    await sleep(450 * speedMult);
+                }
+                setStep(`Depois de ler <strong>${nStr.slice(0, i + 1)}</strong>, o resto acumulado é <strong>${currentVal}</strong>.`);
+                await sleep(500 * speedMult);
+            }
+
+            // Toca o som duplo indicando que chegou no resultado
+            highlightedNode = currentVal;
+            highlightedArrow = null;
+            drawFrame();
+            playFinishSound();
+
+            let finalResto = currentVal;
+            let divisibilidadeTxt = finalResto === 0 ? "é um divisor de" : "NÃO é um divisor de";
+
+            resultMsg.innerHTML = `Pelo grafo de divisibilidade vemos que o resto da divisão inteira de n = <strong>${nStr}</strong> por d = <strong>${dVal}</strong> é igual a <strong>${finalResto}</strong>.<br><br>Observe que <strong>${dVal}</strong> ${divisibilidadeTxt} <strong>${nStr}</strong>.`;
+            resultMsg.style.display = 'block';
+            setStep(`Estado final: <strong>${finalResto}</strong>.<br>A divisibilidade por <strong>${dVal}</strong> acontece exatamente quando o percurso termina no nó <strong>0</strong>.`);
+
+            isAnimating = false;
+        }
+
+        btnBuild.addEventListener('click', buildGraph);
+        btnAnimate.addEventListener('click', runAnimation);
+
+        window.onload = () => { buildGraph(); };
+
+    </script>
+</body>
+</html>
